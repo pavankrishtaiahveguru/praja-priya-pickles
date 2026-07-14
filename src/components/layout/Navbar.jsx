@@ -65,8 +65,8 @@ export default function Navbar() {
       },
       {
         root: null,
-        threshold: [0.2, 0.4, 0.6, 0.8],
-        rootMargin: "-20% 0px -45% 0px",
+        threshold: [0.1, 0.2, 0.3],
+        rootMargin: "-10% 0px -40% 0px",
       },
     );
 
@@ -104,7 +104,7 @@ export default function Navbar() {
               width={90}
               height={90}
               priority
-              className="h-auto sm:w-20 md:w-30"
+              className="h-auto w-16 sm:w-20 md:w-24 lg:w-28"
             />
             <div>
               <h1 className="font-[var(--font-playfair)] text-xl font-bold text-[var(--primary)]">

@@ -26,15 +26,16 @@ export function CartProvider({ children }) {
   }, [cart]);
 
   // Add Product
-  const addToCart = (product, weight = "500g") => {
+  const addToCart = (product, weight) => {
+    const resolvedWeight = weight ?? product?.weight ?? "500g";
     const existingItem = cart.find(
-      (item) => item.id === product.id && item.weight === weight,
+      (item) => item.id === product.id && item.weight === resolvedWeight,
     );
 
     if (existingItem) {
       setCart((prev) =>
         prev.map((item) =>
-          item.id === product.id && item.weight === weight
+          item.id === product.id && item.weight === resolvedWeight
             ? {
                 ...item,
                 quantity: Math.min(item.quantity + 1, 10),
@@ -50,7 +51,7 @@ export function CartProvider({ children }) {
       ...prev,
       {
         ...product,
-        weight,
+        weight: resolvedWeight,
         quantity: 1,
       },
     ]);

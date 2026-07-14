@@ -6,6 +6,20 @@ import { useCart } from "@/context/CartContext";
 
 export default function CartItem({ item }) {
   const { increaseQty, decreaseQty, removeFromCart } = useCart();
+  const displayName = item.name || item.title || "Product";
+  const displayPrice = item.price ?? 0;
+  const displayWeight =
+    item?.type === "combo"
+      ? item.weight || "1kg"
+      : item.weight === "halfKg" ||
+          item.weight === "500g" ||
+          item.weight === "500"
+        ? "500g"
+        : item.weight === "oneKg" ||
+            item.weight === "1kg" ||
+            item.weight === "1 Kg"
+          ? "1kg"
+          : item.weight || "1kg";
 
   return (
     <div className="rounded-2xl border border-[#E8F1DF] bg-white p-2 shadow-sm transition-all duration-300 hover:shadow-md">
@@ -14,7 +28,7 @@ export default function CartItem({ item }) {
         <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl bg-[#F7FAF2]">
           <Image
             src={item.image}
-            alt={item.name}
+            alt={displayName}
             fill
             sizes="80px"
             className="object-cover"
@@ -26,7 +40,7 @@ export default function CartItem({ item }) {
           {/* Product Name + Delete */}
           <div className="flex items-start justify-between gap-3">
             <h3 className="line-clamp-1 font-[var(--font-playfair)] text-xl font-bold text-[#17301F]">
-              {item.name}
+              {displayName}
             </h3>
 
             <button
@@ -40,15 +54,11 @@ export default function CartItem({ item }) {
           {/* Weight & Price */}
           <div className="mt-2 flex items-center justify-between">
             <span className="rounded-full bg-[#F3F9E8] px-3 py-1 text-xs font-semibold text-[#085B2D]">
-              {item.weight === "halfKg" ||
-              item.weight === "500g" ||
-              item.weight === "500"
-                ? "500g"
-                : "1kg"}
+              {displayWeight}
             </span>
 
             <span className="text-2xl font-bold text-[#085B2D]">
-              ₹{item.price}
+              ₹{displayPrice}
             </span>
           </div>
 

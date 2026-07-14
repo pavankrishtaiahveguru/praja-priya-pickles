@@ -4,9 +4,12 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { productCategories } from "@/data/productsData";
 import ProductCard from "./ProductCard";
+import SamplePacks from "./SamplePacks";
+import { useCart } from "@/context/CartContext";
 
 export default function Products() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const { addToCart } = useCart();
 
   // Flatten every category's products into a single "All" list
   const allProducts = useMemo(
@@ -22,9 +25,15 @@ export default function Products() {
   );
 
   const tabs = useMemo(
-    () => [{ id: "all", title: "All" }, ...productCategories],
+    () => [
+      { id: "all", title: "All" },
+      ...productCategories,
+      { id: "sample-packs", title: "Sample Packs" },
+    ],
     [],
   );
+
+  const isSamplePacks = activeCategory === "sample-packs";
 
   const currentCategory =
     activeCategory === "all"
@@ -98,7 +107,7 @@ export default function Products() {
           })}
         </motion.div>
 
-        {/* Products Grid */}
+        {/* Products Grid / Sample Packs */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
@@ -106,15 +115,21 @@ export default function Products() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            className="mt-16"
           >
-            {currentCategory.products.map((product, index) => (
-              <ProductCard
-                key={product._key ?? product.id}
-                product={product}
-                index={index}
-              />
-            ))}
+            {isSamplePacks ? (
+              <SamplePacks onAddCombo={addToCart} />
+            ) : (
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {currentCategory.products.map((product, index) => (
+                  <ProductCard
+                    key={product._key ?? product.id}
+                    product={product}
+                    index={index}
+                  />
+                ))}
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

@@ -97,10 +97,11 @@ export default function ProductCard({ product, index }) {
           src={product.image}
           alt={product.name}
           fill
-          priority={index < 4}
-          sizes="(max-width: 640px) 100vw,
-         (max-width: 768px) 50vw,
-         (max-width: 1024px) 33vw,
+          loading={index === 0 ? "eager" : "lazy"}
+          priority={index === 0}
+          sizes="(max-width:640px) 100vw,
+         (max-width:768px) 50vw,
+         (max-width:1024px) 33vw,
          25vw"
           className="object-cover transition duration-500 group-hover:scale-105"
         />

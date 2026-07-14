@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ArrowLeft } from "lucide-react";
-import { FaWhatsapp} from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
 
 const fieldClass =
@@ -12,8 +12,26 @@ const fieldClass =
 
 const labelClass = "mb-1.5 block text-[13px] font-semibold text-[#4B5A50]";
 
-const weightLabel = (weight) =>
-  weight === "halfKg" ? "500g" : weight === "oneKg" ? "1kg" : weight;
+const weightLabel = (weight) => {
+  if (!weight) return "1kg";
+  if (weight === "halfKg" || weight === "500g" || weight === "500") {
+    return "500g";
+  }
+  if (weight === "oneKg" || weight === "1kg" || weight === "1 Kg") {
+    return "1kg";
+  }
+  return weight;
+};
+
+const getDisplayName = (item) => item?.name || item?.title || "Product";
+const getDisplayWeight = (item) => {
+  if (item?.type === "combo") {
+    return item?.weight || "1kg";
+  }
+
+  return item?.weight || "1kg";
+};
+const getDisplayPrice = (item) => item?.price ?? 0;
 
 const REQUIRED_FIELDS = [
   "name",
@@ -89,7 +107,8 @@ export default function CheckoutModal({ open, onClose }) {
 
   // ===== Modified =====
   // Mobile Number must exist AND be exactly 10 digits.
-  const isMobileValid = form.mobile.trim().length > 0 && /^\d{10}$/.test(form.mobile);
+  const isMobileValid =
+    form.mobile.trim().length > 0 && /^\d{10}$/.test(form.mobile);
   const isPincodeValid = /^\d{6}$/.test(form.pincode);
   const areRequiredFieldsFilled = REQUIRED_FIELDS.every(
     (field) => form[field].trim() !== "",
@@ -133,11 +152,22 @@ export default function CheckoutModal({ open, onClose }) {
     message += `%0A🛍 *Products*%0A`;
 
     cart.forEach((item, index) => {
-      message += `%0A${index + 1}. ${item.name}%0A`;
-      message += `Weight : ${item.weight}%0A`;
+      const displayName = getDisplayName(item);
+      const displayWeight = weightLabel(getDisplayWeight(item));
+
+      message += `%0A${index + 1}. ${displayName}%0A`;
+      message += `Weight : ${displayWeight}%0A`;
+
+      if (item?.type === "combo" && item?.selectedItems?.length) {
+        message += `Selected Pickles:%0A`;
+        item.selectedItems.forEach((selectedItem) => {
+          message += `- ${selectedItem}%0A`;
+        });
+      }
+
       message += `Qty : ${item.quantity}%0A`;
-      message += `Price : ₹${item.price}%0A`;
-      message += `Subtotal : ₹${item.price * item.quantity}%0A`;
+      message += `Price : ₹${getDisplayPrice(item)}%0A`;
+      message += `Subtotal : ₹${getDisplayPrice(item) * item.quantity}%0A`;
     });
 
     message += `%0A💰 *Grand Total : ₹${getCartTotal()}*`;
@@ -227,7 +257,7 @@ export default function CheckoutModal({ open, onClose }) {
                             <div className="relative h-[60px] w-[60px] shrink-0 overflow-hidden rounded-xl bg-white">
                               <Image
                                 src={item.image}
-                                alt={item.name}
+                                alt={getDisplayName(item)}
                                 fill
                                 sizes="60px"
                                 className="object-cover"
@@ -236,17 +266,37 @@ export default function CheckoutModal({ open, onClose }) {
 
                             <div className="min-w-0 flex-1">
                               <p className="truncate text-[15px] font-semibold text-[#17301F]">
-                                {item.name}
+                                {getDisplayName(item)}
                               </p>
                               <p className="text-[13px] text-gray-500">
-                                {item.weight &&
-                                  `${weightLabel(item.weight)} · `}
-                                Qty: {item.quantity} · ₹{item.price} each
+                                {weightLabel(getDisplayWeight(item))} · Qty:{" "}
+                                {item.quantity} · ₹{getDisplayPrice(item)} each
                               </p>
+
+                              {item?.type === "combo" &&
+                                item?.selectedItems?.length > 0 && (
+                                  <div className="mt-2 rounded-lg border border-[#EEF2E6] bg-white/70 px-3 py-2">
+                                    <p className="text-[11px] font-semibold uppercase tracking-wide text-[#085B2D]">
+                                      Selected Pickles
+                                    </p>
+                                    <ul className="mt-1 space-y-1">
+                                      {item.selectedItems.map(
+                                        (selectedItem, selectedIndex) => (
+                                          <li
+                                            key={`${item.id}-${selectedItem}-${selectedIndex}`}
+                                            className="text-[12px] text-gray-600"
+                                          >
+                                            • {selectedItem}
+                                          </li>
+                                        ),
+                                      )}
+                                    </ul>
+                                  </div>
+                                )}
                             </div>
 
                             <p className="shrink-0 text-[15px] font-semibold text-[#085B2D]">
-                              ₹{item.price * item.quantity}
+                              ₹{getDisplayPrice(item) * item.quantity}
                             </p>
                           </div>
                         ))}
@@ -302,7 +352,7 @@ export default function CheckoutModal({ open, onClose }) {
                         <input
                           id="name"
                           name="name"
-                          placeholder="e.g. Ramesh Kumar"
+                          placeholder="Enter Full Name"
                           value={form.name}
                           onChange={handleChange}
                           className={fieldClass}
@@ -317,7 +367,7 @@ export default function CheckoutModal({ open, onClose }) {
                           id="mobile"
                           name="mobile"
                           inputMode="numeric"
-                          placeholder="10-digit mobile number"
+                          placeholder="Enter 10-digit mobile number"
                           value={form.mobile}
                           onChange={handleChange}
                           maxLength={10}
