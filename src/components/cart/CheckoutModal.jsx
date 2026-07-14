@@ -1,0 +1,484 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { X, ArrowLeft } from "lucide-react";
+import { FaWhatsapp} from "react-icons/fa";
+import { useCart } from "@/context/CartContext";
+
+const fieldClass =
+  "h-12 w-full rounded-xl border border-[#E5E7EB] bg-[#FCFCFA] px-4 text-[15px] text-[#17301F] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#085B2D] focus:bg-white focus:ring-2 focus:ring-[#085B2D]/15";
+
+const labelClass = "mb-1.5 block text-[13px] font-semibold text-[#4B5A50]";
+
+const weightLabel = (weight) =>
+  weight === "halfKg" ? "500g" : weight === "oneKg" ? "1kg" : weight;
+
+const REQUIRED_FIELDS = [
+  "name",
+  "mobile",
+  "address",
+  "city",
+  "district",
+  "state",
+  "pincode",
+];
+
+export default function CheckoutModal({ open, onClose }) {
+  const { cart, getCartTotal, clearCart } = useCart();
+
+  // step: "summary" | "details"
+  const [step, setStep] = useState("summary");
+
+  const [form, setForm] = useState({
+    name: "",
+    mobile: "",
+    address: "",
+    city: "",
+    district: "",
+    state: "",
+    pincode: "",
+    notes: "",
+  });
+
+  // Lock body scroll while the modal is open, restore on close/unmount.
+  useEffect(() => {
+    if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [open]);
+
+  // Every time the modal is freshly opened, start back at the summary step.
+  // (Form values are intentionally NOT cleared here — only on a completed
+  // WhatsApp order via clearCart — so re-opening mid-edit doesn't lose data.)
+  useEffect(() => {
+    if (open) setStep("summary");
+  }, [open]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Mobile / Pincode: digits only, hard-capped at their max length.
+    if (name === "mobile") {
+      setForm((prev) => ({
+        ...prev,
+        mobile: value.replace(/\D/g, "").slice(0, 10),
+      }));
+      return;
+    }
+
+    if (name === "pincode") {
+      setForm((prev) => ({
+        ...prev,
+        pincode: value.replace(/\D/g, "").slice(0, 6),
+      }));
+      return;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // ===== Modified =====
+  // Mobile Number must exist AND be exactly 10 digits.
+  const isMobileValid = form.mobile.trim().length > 0 && /^\d{10}$/.test(form.mobile);
+  const isPincodeValid = /^\d{6}$/.test(form.pincode);
+  const areRequiredFieldsFilled = REQUIRED_FIELDS.every(
+    (field) => form[field].trim() !== "",
+  );
+  const isFormValid =
+    areRequiredFieldsFilled && isMobileValid && isPincodeValid;
+
+  const showMobileError = form.mobile.length > 0 && !isMobileValid;
+  const showPincodeError = form.pincode.length > 0 && !isPincodeValid;
+
+  const handleWhatsApp = () => {
+    if (
+      !form.name ||
+      !isMobileValid ||
+      !form.address ||
+      !form.city ||
+      !form.district ||
+      !form.state ||
+      !form.pincode
+    ) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    let message = `🛒 *New Order - Praja Priya Pickles*%0A%0A`;
+
+    message += `👤 *Customer Details*%0A`;
+    message += `Name: ${form.name}%0A`;
+    message += `Mobile: ${form.mobile}%0A`;
+
+    message += `%0A📍 *Delivery Address*%0A`;
+    message += `${form.address}%0A`;
+    message += `${form.city}%0A`;
+    message += `${form.district}%0A`;
+    message += `${form.state} - ${form.pincode}%0A`;
+
+    if (form.notes) {
+      message += `%0ANotes: ${form.notes}%0A`;
+    }
+
+    message += `%0A🛍 *Products*%0A`;
+
+    cart.forEach((item, index) => {
+      message += `%0A${index + 1}. ${item.name}%0A`;
+      message += `Weight : ${item.weight}%0A`;
+      message += `Qty : ${item.quantity}%0A`;
+      message += `Price : ₹${item.price}%0A`;
+      message += `Subtotal : ₹${item.price * item.quantity}%0A`;
+    });
+
+    message += `%0A💰 *Grand Total : ₹${getCartTotal()}*`;
+
+    const whatsappNumber = "919999999999"; // <-- Replace with your number
+
+    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
+
+    clearCart();
+    onClose();
+  };
+
+  const subtitle =
+    step === "summary"
+      ? "Review your order before continuing."
+      : "Just a few more details to complete your order.";
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] bg-black/40 backdrop-blur-sm"
+            onClick={onClose}
+          />
+
+          {/* Modal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="checkout-modal-title"
+            className="fixed left-1/2 top-1/2 z-[120] flex max-h-[85vh] w-[95%] max-w-[640px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_rgba(8,91,45,0.18)]"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#EEF2E6] px-6 py-6 sm:px-8">
+              <div>
+                <h2
+                  id="checkout-modal-title"
+                  className="font-[var(--font-playfair)] text-2xl font-bold text-[#17301F] sm:text-3xl"
+                >
+                  Checkout
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-500 sm:text-base">
+                  {subtitle}
+                </p>
+              </div>
+
+              <button
+                onClick={onClose}
+                aria-label="Close checkout"
+                className="rounded-full p-2 text-[#17301F] transition-colors duration-300 hover:bg-[#F2F6EE] hover:text-[#085B2D]"
+              >
+                <X />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8">
+              <AnimatePresence mode="wait" initial={false}>
+                {step === "summary" ? (
+                  <motion.div
+                    key="summary"
+                    initial={{ opacity: 0, x: -24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -24 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    <h3 className="mb-4 text-lg font-bold text-[#17301F]">
+                      Your Order
+                    </h3>
+
+                    <div className="rounded-2xl border border-[#EEF2E6] bg-[#FAFCF7] p-5">
+                      <div className="flex flex-col gap-4">
+                        {cart.map((item, index) => (
+                          <div
+                            key={`${item.id}-${item.weight}-${index}`}
+                            className="flex items-center gap-4"
+                          >
+                            <div className="relative h-[60px] w-[60px] shrink-0 overflow-hidden rounded-xl bg-white">
+                              <Image
+                                src={item.image}
+                                alt={item.name}
+                                fill
+                                sizes="60px"
+                                className="object-cover"
+                              />
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-[15px] font-semibold text-[#17301F]">
+                                {item.name}
+                              </p>
+                              <p className="text-[13px] text-gray-500">
+                                {item.weight &&
+                                  `${weightLabel(item.weight)} · `}
+                                Qty: {item.quantity} · ₹{item.price} each
+                              </p>
+                            </div>
+
+                            <p className="shrink-0 text-[15px] font-semibold text-[#085B2D]">
+                              ₹{item.price * item.quantity}
+                            </p>
+                          </div>
+                        ))}
+
+                        {cart.length === 0 && (
+                          <p className="text-sm text-gray-500">
+                            Your cart is empty.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="mt-5 space-y-2 border-t border-[#EEF2E6] pt-4">
+                        <div className="flex items-center justify-between text-sm text-gray-600">
+                          <span>Subtotal</span>
+                          <span>₹{getCartTotal()}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between text-sm text-gray-600">
+                          <span>Delivery</span>
+                          <span className="font-semibold text-[#085B2D]">
+                            Free
+                          </span>
+                        </div>
+
+                        <div className="mt-2 flex items-center justify-between border-t border-[#EEF2E6] pt-3">
+                          <span className="text-base font-bold text-[#17301F]">
+                            Grand Total
+                          </span>
+                          <span className="text-2xl font-bold text-[#085B2D]">
+                            ₹{getCartTotal()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="details"
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 24 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    <h3 className="mb-5 text-lg font-bold text-[#17301F]">
+                      Customer Information
+                    </h3>
+
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div>
+                        <label htmlFor="name" className={labelClass}>
+                          Full Name *
+                        </label>
+                        <input
+                          id="name"
+                          name="name"
+                          placeholder="e.g. Ramesh Kumar"
+                          value={form.name}
+                          onChange={handleChange}
+                          className={fieldClass}
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="mobile" className={labelClass}>
+                          Mobile Number *
+                        </label>
+                        <input
+                          id="mobile"
+                          name="mobile"
+                          inputMode="numeric"
+                          placeholder="10-digit mobile number"
+                          value={form.mobile}
+                          onChange={handleChange}
+                          maxLength={10}
+                          className={`${fieldClass} ${
+                            showMobileError
+                              ? "border-red-400 focus:border-red-400 focus:ring-red-100"
+                              : ""
+                          }`}
+                        />
+                        {showMobileError && (
+                          <p className="mt-1 text-xs text-red-500">
+                            Enter a valid 10-digit mobile number.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label htmlFor="address" className={labelClass}>
+                          House / Street Address *
+                        </label>
+                        <input
+                          id="address"
+                          name="address"
+                          placeholder="House no., street, area"
+                          value={form.address}
+                          onChange={handleChange}
+                          className={fieldClass}
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="city" className={labelClass}>
+                          City *
+                        </label>
+                        <input
+                          id="city"
+                          name="city"
+                          placeholder="City"
+                          value={form.city}
+                          onChange={handleChange}
+                          className={fieldClass}
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="district" className={labelClass}>
+                          District *
+                        </label>
+                        <input
+                          id="district"
+                          name="district"
+                          placeholder="District"
+                          value={form.district}
+                          onChange={handleChange}
+                          className={fieldClass}
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="state" className={labelClass}>
+                          State *
+                        </label>
+                        <input
+                          id="state"
+                          name="state"
+                          placeholder="State"
+                          value={form.state}
+                          onChange={handleChange}
+                          className={fieldClass}
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="pincode" className={labelClass}>
+                          Pincode *
+                        </label>
+                        <input
+                          id="pincode"
+                          name="pincode"
+                          inputMode="numeric"
+                          placeholder="6-digit pincode"
+                          value={form.pincode}
+                          onChange={handleChange}
+                          maxLength={6}
+                          className={`${fieldClass} ${
+                            showPincodeError
+                              ? "border-red-400 focus:border-red-400 focus:ring-red-100"
+                              : ""
+                          }`}
+                        />
+                        {showPincodeError && (
+                          <p className="mt-1 text-xs text-red-500">
+                            Enter a valid 6-digit pincode.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label htmlFor="notes" className={labelClass}>
+                          Additional Notes
+                        </label>
+                        <textarea
+                          id="notes"
+                          rows={4}
+                          name="notes"
+                          placeholder="Delivery instructions, preferences, etc."
+                          value={form.notes}
+                          onChange={handleChange}
+                          className="min-h-[120px] w-full resize-none rounded-xl border border-[#E5E7EB] bg-[#FCFCFA] p-4 text-[15px] text-[#17301F] placeholder:text-gray-400 outline-none transition-all duration-300 focus:border-[#085B2D] focus:bg-white focus:ring-2 focus:ring-[#085B2D]/15"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Footer */}
+            <div className="flex flex-col gap-3 border-t border-[#EEF2E6] bg-white px-6 py-5 sm:flex-row sm:px-8">
+              {step === "summary" ? (
+                <>
+                  <button
+                    onClick={onClose}
+                    className="order-2 flex-1 rounded-full border border-[#085B2D] py-4 font-semibold text-[#085B2D] transition-all duration-300 hover:bg-[#085B2D] hover:text-white sm:order-1"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={() => setStep("details")}
+                    disabled={cart.length === 0}
+                    className="order-1 flex-1 rounded-full bg-[#085B2D] py-4 font-semibold text-white transition-all duration-300 hover:bg-[#40bf53] disabled:cursor-not-allowed disabled:opacity-50 sm:order-2"
+                  >
+                    Continue
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setStep("summary")}
+                    className="order-2 flex flex-1 items-center justify-center gap-2 rounded-full border border-[#085B2D] py-4 font-semibold text-[#085B2D] transition-all duration-300 hover:bg-[#085B2D] hover:text-white sm:order-1"
+                  >
+                    <ArrowLeft size={18} />
+                    Back
+                  </button>
+
+                  <button
+                    onClick={handleWhatsApp}
+                    disabled={!isFormValid}
+                    aria-disabled={!isFormValid}
+                    className="order-1 flex flex-1 items-center justify-center gap-2 rounded-full bg-[#25D366] py-4 font-semibold text-white shadow-[0_10px_25px_rgba(37,211,102,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#20BA5A] hover:shadow-[0_14px_32px_rgba(37,211,102,0.45)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-[#25D366] disabled:hover:shadow-[0_10px_25px_rgba(37,211,102,0.35)] sm:order-2"
+                  >
+                    <FaWhatsapp size={20} />
+                    Continue to WhatsApp
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
