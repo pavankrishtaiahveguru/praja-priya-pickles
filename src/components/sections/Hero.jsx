@@ -29,6 +29,17 @@ export default function Hero() {
       <div className="pointer-events-none absolute -right-16 top-1/3 h-56 w-56 rounded-full bg-green-200/50 blur-3xl sm:-right-20 sm:h-64 sm:w-64 lg:-right-28 lg:h-80 lg:w-80" />
       <div className="pointer-events-none absolute bottom-0 left-1/4 h-48 w-48 rounded-full bg-lime-200/40 blur-3xl lg:h-64 lg:w-64" />
 
+      {/* Decorative Leaf Accent — desktop only, bottom-left of section */}
+      <div className="pointer-events-none absolute -left-25 bottom-10 hidden h-40 w-40 -rotate-[100deg] opacity-40 blur-[3px] sm:block md:h-48 md:w-48 lg:h-56 lg:w-56">
+        <Image
+          src="/images/leafs.png"
+          alt=""
+          fill
+          aria-hidden="true"
+          className="object-contain"
+        />
+      </div>
+
       <div className="container relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 md:gap-12 lg:grid-cols-2 lg:gap-14 lg:px-8 lg:py-14">
         {/* Left */}
         <motion.div
@@ -146,6 +157,19 @@ export default function Hero() {
             {/* Soft glow behind product */}
             <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
               <div className="h-[70%] w-[70%] rounded-full bg-gradient-to-br from-yellow-200/40 to-green-200/40 blur-3xl" />
+            </div>
+
+            {/* Decorative leaf — anchored to the image container itself so it
+                sits right next to the jar on every breakpoint, including the
+                mobile stacked layout, instead of floating near the headline */}
+            <div className="pointer-events-none absolute -right-25 -top-4 z-0 h-30 w-30 rotate-12 opacity-60 blur-[3px] sm:-right-6 sm:-top-6 sm:h-32 sm:w-32 md:-right-20 md:-top-10 md:h-50 md:w-40 lg:-right-60 lg:-top-50 lg:h-72 lg:w-72 xl:h-96 xl:w-96">
+              <Image
+                src="/images/leafs.png"
+                alt=""
+                fill
+                aria-hidden="true"
+                className="object-contain"
+              />
             </div>
 
             {/* Main Product — swap the src below once you have the real asset */}
