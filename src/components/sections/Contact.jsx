@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Clock, Leaf } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 // WhatsApp business number (with country code, no spaces/symbols)
 const WHATSAPP_NUMBER = "919853866999";
@@ -167,9 +168,9 @@ export default function Contact() {
                     Praja Priya Pickles
                     <br />
                     Atreyapuram (M),
-                    <br/>
-                    Dr. B. R. Ambedkar Konaseema, 
-                    <br/>
+                    <br />
+                    Dr. B. R. Ambedkar Konaseema,
+                    <br />
                     Andhra Pradesh, India
                   </p>
                 </div>
@@ -313,12 +314,16 @@ export default function Contact() {
                   form fields above and opens it in a new tab/app */}
               <div className="flex flex-col pt-1 sm:flex-row">
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="flex h-14 flex-1 items-center justify-center rounded-full bg-[#085B2D] font-semibold text-white shadow-[0_10px_25px_rgba(8,91,45,0.25)] transition hover:bg-[#06471F]"
+                  className="group flex h-12 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#0A7D3C] to-[#085B2D] px-6 text-[15px] font-semibold text-white shadow-[0_12px_30px_rgba(8,91,45,0.25)] transition-all duration-300 hover:shadow-[0_18px_40px_rgba(8,91,45,0.35)] md:h-14 md:text-base"
                 >
-                  Send Message via WhatsApp
+                  <FaWhatsapp
+                    size={20}
+                    className="transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <span>Send via WhatsApp</span>
                 </motion.button>
               </div>
             </form>
