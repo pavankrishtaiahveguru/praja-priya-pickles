@@ -92,7 +92,30 @@ export default function ProductCard({ product, index }) {
       className="group overflow-hidden rounded-2xl border border-[#EEF2E6] bg-white shadow-[0_12px_35px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_22px_55px_rgba(8,91,45,0.12)]"
     >
       {/* Image */}
+      {/* Image */}
       <div className="relative h-50 overflow-hidden bg-[#F7FAF2]">
+        {/* Category Badge */}
+        <div className="absolute left-3 top-3 z-20">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider shadow-md
+      ${
+        product.category === "Veg Pickles"
+          ? "bg-emerald-600 text-white"
+          : product.category === "Non-Veg Pickles"
+            ? "bg-rose-600 text-white"
+            : "bg-amber-600 text-white"
+      }`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-white" />
+
+            {product.category === "Veg Pickles"
+              ? "Veg"
+              : product.category === "Non-Veg Pickles"
+                ? "Non-Veg"
+                : "Podi"}
+          </span>
+        </div>
+
         <Image
           src={product.image}
           alt={product.name}
@@ -100,9 +123,9 @@ export default function ProductCard({ product, index }) {
           loading={index === 0 ? "eager" : "lazy"}
           priority={index === 0}
           sizes="(max-width:640px) 100vw,
-         (max-width:768px) 50vw,
-         (max-width:1024px) 33vw,
-         25vw"
+           (max-width:768px) 50vw,
+           (max-width:1024px) 33vw,
+           25vw"
           className="object-cover transition duration-500 group-hover:scale-105"
         />
       </div>

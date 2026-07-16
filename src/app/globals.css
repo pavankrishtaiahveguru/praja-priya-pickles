@@ -71,3 +71,12 @@ a {
   background: var(--primary);
   border-radius: 9999px;
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

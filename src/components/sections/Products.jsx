@@ -83,28 +83,30 @@ export default function Products() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
           viewport={{ once: true }}
-          className="mt-14 flex flex-wrap justify-center gap-4"
+          className="mt-10 -mx-4 overflow-x-auto px-4 scrollbar-hide md:mx-0 md:mt-14 md:overflow-visible"
         >
-          {tabs.map((category) => {
-            const active = activeCategory === category.id;
+          <div className="flex w-max gap-2 md:w-full md:flex-wrap md:justify-center md:gap-4">
+            {tabs.map((category) => {
+              const active = activeCategory === category.id;
 
-            return (
-              <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                aria-pressed={active}
-                className={`relative overflow-hidden rounded-full px-7 py-3 text-[16px] font-semibold transition-all duration-300
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  aria-pressed={active}
+                  className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-medium transition-all duration-300 sm:px-5 sm:text-sm md:px-7 md:py-3 md:text-base
 
-                ${
-                  active
-                    ? "bg-[#085B2D] text-white shadow-xl shadow-green-900/20"
-                    : "border border-[#E5E7EB] bg-white text-gray-700 hover:border-[#085B2D] hover:text-[#085B2D]"
-                }`}
-              >
-                {category.title}
-              </button>
-            );
-          })}
+          ${
+            active
+              ? "bg-[#085B2D] text-white shadow-lg shadow-green-900/20"
+              : "border border-[#E5E7EB] bg-white text-gray-700 hover:border-[#085B2D] hover:text-[#085B2D]"
+          }`}
+                >
+                  {category.title}
+                </button>
+              );
+            })}
+          </div>
         </motion.div>
 
         {/* Products Grid / Sample Packs */}
