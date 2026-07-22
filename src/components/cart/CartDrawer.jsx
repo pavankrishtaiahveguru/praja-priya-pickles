@@ -16,33 +16,16 @@ export default function CartDrawer({ open, onClose, onCheckout }) {
     const html = document.documentElement;
 
     const previousBodyOverflow = body.style.overflow;
-    const previousBodyTouchAction = body.style.touchAction;
-    const previousBodyOverscrollBehavior = body.style.overscrollBehavior;
     const previousHtmlOverflow = html.style.overflow;
-    const previousHtmlOverscrollBehavior = html.style.overscrollBehavior;
 
+    // Lock only the background page — no global wheel/touchmove blocking,
+    // since that also blocked scrolling inside the drawer itself.
     body.style.overflow = "hidden";
-    body.style.touchAction = "none";
-    body.style.overscrollBehavior = "none";
     html.style.overflow = "hidden";
-    html.style.overscrollBehavior = "none";
-
-    const preventScroll = (event) => {
-      event.preventDefault();
-    };
-
-    window.addEventListener("wheel", preventScroll, { passive: false });
-    window.addEventListener("touchmove", preventScroll, { passive: false });
 
     return () => {
       body.style.overflow = previousBodyOverflow;
-      body.style.touchAction = previousBodyTouchAction;
-      body.style.overscrollBehavior = previousBodyOverscrollBehavior;
       html.style.overflow = previousHtmlOverflow;
-      html.style.overscrollBehavior = previousHtmlOverscrollBehavior;
-
-      window.removeEventListener("wheel", preventScroll);
-      window.removeEventListener("touchmove", preventScroll);
     };
   }, [open]);
 
@@ -65,7 +48,7 @@ export default function CartDrawer({ open, onClose, onCheckout }) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.35 }}
-            className="fixed right-0 top-0 z-[100] flex h-screen w-full max-w-md flex-col bg-white shadow-2xl"
+            className="fixed right-0 top-0 z-[100] flex h-dvh w-full max-w-md flex-col overflow-hidden bg-white shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-200 p-6">
@@ -88,7 +71,7 @@ export default function CartDrawer({ open, onClose, onCheckout }) {
             </div>
 
             {/* Items */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-6">
               {cart.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center px-6 text-center">
                   <ShoppingBag size={70} className="text-[#085B2D]/30" />

@@ -105,7 +105,19 @@ export default function BulkOrders() {
                 </a>
 
                 <a
-                  href="https://wa.me/919853866999"
+                  href={`https://wa.me/919853866999?text=${encodeURIComponent(
+                    `Hello Praja Priya Pickles,
+
+I would like to enquire about your bulk supply of Mango Brain and Lemon Brain.
+
+Please share:
+• Wholesale Price
+• Minimum Order Quantity (MOQ)
+• Availability
+• Delivery Details
+
+Thank you!`,
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-14 items-center justify-center gap-2 rounded-full border border-[#085B2D] font-semibold text-[#085B2D] transition hover:bg-[#085B2D] hover:text-white"

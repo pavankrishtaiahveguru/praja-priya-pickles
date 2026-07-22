@@ -43,8 +43,31 @@ const REQUIRED_FIELDS = [
   "pincode",
 ];
 
+// Fixed delivery charge applied once per order (not per product).
+const DELIVERY_CHARGE = 100;
+
+// Small delay (ms) before clearing the cart / closing the modal, giving the
+// browser time to actually open the WhatsApp window before we reset state.
+const CART_CLEAR_DELAY_MS = 800;
+
+// Converts a raw string like "ap" or "AP" or "andhra pradesh" into
+// Title Case (e.g. "Ap", "Andhra Pradesh") after trimming whitespace.
+const toTitleCase = (value) =>
+  value
+    .trim()
+    .toLowerCase()
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
 export default function CheckoutModal({ open, onClose }) {
   const { cart, getCartTotal, clearCart } = useCart();
+
+  // Derived pricing values — single source of truth used by both the
+  // Order Summary UI and the WhatsApp message so totals always match.
+  const subtotal = getCartTotal();
+  const grandTotal = subtotal + DELIVERY_CHARGE;
 
   // step: "summary" | "details"
   const [step, setStep] = useState("summary");
@@ -133,51 +156,84 @@ export default function CheckoutModal({ open, onClose }) {
       return;
     }
 
-    let message = `🛒 *New Order - Praja Priya Pickles*%0A%0A`;
-
-    message += `👤 *Customer Details*%0A`;
-    message += `Name: ${form.name}%0A`;
-    message += `Mobile: ${form.mobile}%0A`;
-
-    message += `%0A📍 *Delivery Address*%0A`;
-    message += `${form.address}%0A`;
-    message += `${form.city}%0A`;
-    message += `${form.district}%0A`;
-    message += `${form.state} - ${form.pincode}%0A`;
-
-    if (form.notes) {
-      message += `%0ANotes: ${form.notes}%0A`;
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
+      return;
     }
 
-    message += `%0A🛍 *Products*%0A`;
+    const whatsappNumber = "919853866999"; // <-- Replace with your number
+
+    // Normalize customer-entered values before building the message.
+    const customerName = form.name.trim();
+    const customerMobile = form.mobile.trim();
+    const customerAddress = form.address.trim();
+    const customerCity = form.city.trim();
+    const customerDistrict = form.district.trim();
+    const customerState = toTitleCase(form.state);
+    const customerPincode = form.pincode.trim();
+    const customerNotes = form.notes.trim();
+
+    let message = `🛒 *New Order - Praja Priya Pickles*\n\n`;
+
+    message += `👤 *Customer Details*\n\n`;
+    message += `Name : ${customerName}\n`;
+    message += `Mobile : ${customerMobile}\n`;
+
+    message += `\n📍 *Delivery Address*\n\n`;
+    message += `Address : ${customerAddress}\n`;
+    message += `City : ${customerCity}\n`;
+    message += `District : ${customerDistrict}\n`;
+    message += `State : ${customerState}\n`;
+    message += `Pincode : ${customerPincode}\n`;
+
+    if (customerNotes) {
+      message += `Additional Notes : ${customerNotes}\n`;
+    }
+
+    message += `\n🛍️ *Products*\n`;
 
     cart.forEach((item, index) => {
       const displayName = getDisplayName(item);
       const displayWeight = weightLabel(getDisplayWeight(item));
+      const itemSubtotal = getDisplayPrice(item) * item.quantity;
 
-      message += `%0A${index + 1}. ${displayName}%0A`;
-      message += `Weight : ${displayWeight}%0A`;
+      message += `\n*${index + 1}*. ${displayName}\n`;
+      message += `Weight : ${displayWeight}\n`;
 
       if (item?.type === "combo" && item?.selectedItems?.length) {
-        message += `Selected Pickles:%0A`;
+        message += `Selected Pickles :\n`;
+
         item.selectedItems.forEach((selectedItem) => {
-          message += `- ${selectedItem}%0A`;
+          message += `• ${selectedItem}\n`;
         });
       }
 
-      message += `Qty : ${item.quantity}%0A`;
-      message += `Price : ₹${getDisplayPrice(item)}%0A`;
-      message += `Subtotal : ₹${getDisplayPrice(item) * item.quantity}%0A`;
+      message += `Quantity : ${item.quantity}\n`;
+      message += `Price : ₹${getDisplayPrice(item)}\n`;
+      message += `Subtotal : ₹${itemSubtotal}\n`;
     });
 
-    message += `%0A💰 *Grand Total : ₹${getCartTotal()}*`;
+    message += `\n━━━━━━━━━━━━━━━━━━━━━━\n`;
+    message += `Subtotal : ₹${subtotal}\n`;
+    message += `Delivery Charge : ₹${DELIVERY_CHARGE}\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+    message += `💰 *Grand Total : ₹${grandTotal}*`;
 
-    const whatsappNumber = "919999999999"; // <-- Replace with your number
+    const encodedMessage = encodeURIComponent(message);
 
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
+    const popup = window.open(
+      `https://wa.me/${whatsappNumber}?text=${encodedMessage}`,
+      "_blank",
+    );
 
-    clearCart();
-    onClose();
+    // Only clear the cart / close the modal if the popup/tab was actually
+    // opened — prevents accidental cart clearing if the browser blocks it.
+    if (popup) {
+      setTimeout(() => {
+        clearCart();
+        onClose();
+      }, CART_CLEAR_DELAY_MS);
+    }
   };
 
   const subtitle =
@@ -311,13 +367,16 @@ export default function CheckoutModal({ open, onClose }) {
                       <div className="mt-5 space-y-2 border-t border-[#EEF2E6] pt-4">
                         <div className="flex items-center justify-between text-sm text-gray-600">
                           <span>Subtotal</span>
-                          <span>₹{getCartTotal()}</span>
+                          <span>₹{subtotal}</span>
                         </div>
 
                         <div className="flex items-center justify-between text-sm text-gray-600">
                           <span>Delivery</span>
-                          <span className="font-semibold text-[#085B2D]">
-                            Free
+                          {/* <span className="font-semibold text-[#085B2D]">
+                            Extra
+                          </span> */}
+                          <span className="font-semibold text-orange-500">
+                            + ₹{DELIVERY_CHARGE}
                           </span>
                         </div>
 
@@ -326,7 +385,7 @@ export default function CheckoutModal({ open, onClose }) {
                             Grand Total
                           </span>
                           <span className="text-2xl font-bold text-[#085B2D]">
-                            ₹{getCartTotal()}
+                            ₹{grandTotal}
                           </span>
                         </div>
                       </div>

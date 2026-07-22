@@ -15,6 +15,17 @@ export const productCategories = [
       },
       {
         id: 2,
+        name: "Kotha Avakaya",
+        image: "/products/veg/kotha-avakaya.png",
+        price: {
+          halfKg: 125,
+          oneKg: 250,
+        },
+        category: "Veg Pickles",
+      },
+
+      {
+        id: 3,
         name: "Lemon Pickle",
         image: "/products/veg/lemon-pickle.jpg",
         price: {
@@ -24,7 +35,7 @@ export const productCategories = [
         category: "Veg Pickles",
       },
       {
-        id: 3,
+        id: 4,
         name: "Tomato Pickle",
         image: "/products/veg/tomato-pickle.jpg",
         price: {
@@ -34,7 +45,7 @@ export const productCategories = [
         category: "Veg Pickles",
       },
       {
-        id: 4,
+        id: 5,
         name: "Ginger Pickle",
         image: "/products/veg/ginger-pickle.jpeg",
         price: {
@@ -44,7 +55,7 @@ export const productCategories = [
         category: "Veg Pickles",
       },
       {
-        id: 5,
+        id: 6,
         name: "Amla Pickle",
         image: "/products/veg/amla-pickle.jpg",
         price: {
@@ -54,7 +65,7 @@ export const productCategories = [
         category: "Veg Pickles",
       },
       {
-        id: 6,
+        id: 7,
         name: "Gongura Pickle",
         image: "/products/veg/gongura-pickle.jpeg",
         price: {
@@ -64,7 +75,7 @@ export const productCategories = [
         category: "Veg Pickles",
       },
       {
-        id: 7,
+        id: 8,
         name: "Mango Thokku",
         image: "/products/veg/mango-thokku.jpeg",
         price: {
@@ -74,7 +85,7 @@ export const productCategories = [
         category: "Veg Pickles",
       },
       {
-        id: 8,
+        id: 9,
         name: "Bitter Gourd Pickle",
         image: "/products/veg/bitter-gourd-pickle.jpeg",
         price: {
@@ -84,7 +95,7 @@ export const productCategories = [
         category: "Veg Pickles",
       },
       {
-        id: 9,
+        id: 10,
         name: "Citron Pickle",
         image: "/products/veg/citron-pickle.jpeg",
         price: {
@@ -94,7 +105,7 @@ export const productCategories = [
         category: "Veg Pickles",
       },
       {
-        id: 10,
+        id: 11,
         name: "Drumstick Pickle",
         image: "/products/veg/drumstick-pickle.jpeg",
         price: {
