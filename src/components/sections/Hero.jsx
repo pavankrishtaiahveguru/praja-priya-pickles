@@ -40,24 +40,24 @@ export default function Hero() {
           {[...Array(3)].map((_, repeat) => (
             <div key={repeat} className="flex shrink-0 items-center">
               {[...Array(8)].map((_, index) => (
-                <span
+                <div
                   key={index}
-                  className="flex items-center px-10 text-sm font-bold uppercase tracking-[4px] text-red-600 md:text-base"
+                  className="flex shrink-0 items-center gap-16 px-8"
                 >
-                  <span className="font-[family-name:var(--font-cormorant)] text-base font-bold tracking-[5px] drop-shadow-sm md:text-lg">
+                  <span className="font-[family-name:var(--font-cormorant)] text-base font-bold uppercase tracking-[5px] text-red-600 drop-shadow-sm md:text-lg">
                     PRASAD SPICES
                   </span>
 
-                  <span className="ml-10 text-green-600/80">✦</span>
-                </span>
+                  <span className="text-green-600/80">✦</span>
+                </div>
               ))}
             </div>
           ))}
         </div>
 
-        {/* Optional subtle highlight */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/70" />
       </div>
+
       {/* Background Blur / Glows */}
       <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-yellow-200/50 blur-3xl sm:-left-20 sm:h-64 sm:w-64 lg:-left-28 lg:top-10 lg:h-80 lg:w-80" />
       <div className="pointer-events-none absolute -right-16 top-1/3 h-56 w-56 rounded-full bg-green-200/50 blur-3xl sm:-right-20 sm:h-64 sm:w-64 lg:-right-28 lg:h-80 lg:w-80" />
