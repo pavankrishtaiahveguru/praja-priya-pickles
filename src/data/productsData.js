@@ -18,8 +18,8 @@ export const productCategories = [
         name: "Kotha Avakaya",
         image: "/products/veg/kotha-avakaya.png",
         price: {
-          halfKg: 125,
-          oneKg: 250,
+          halfKg: 200,
+          oneKg: 400,
         },
         category: "Veg Pickles",
       },

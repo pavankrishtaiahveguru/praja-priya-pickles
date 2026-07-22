@@ -9,7 +9,7 @@ A premium, modern, and fully responsive website for **Praja Priya Pickles**, sho
 > Add your deployed website link here
 
 ```
-https://your-domain.com
+https://prajapriyapickles.in
 ```
 
 ---

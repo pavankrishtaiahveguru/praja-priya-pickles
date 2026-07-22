@@ -24,6 +24,28 @@ export default function Hero() {
       id="home"
       className={`${playfair.variable} ${script.variable} relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-[#FFFDF6] via-[#FBF3D9] to-[#EFF6DC]`}
     >
+      {/* Glass Marquee */}
+      <div className="absolute top-0 left-0 z-30 w-full overflow-hidden border-b border-white/20 bg-white/15 backdrop-blur-2xl shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+        <div className="flex whitespace-nowrap py-3 animate-marquee">
+          {[...Array(3)].map((_, repeat) => (
+            <div key={repeat} className="flex shrink-0 items-center">
+              {[...Array(8)].map((_, index) => (
+                <span
+                  key={index}
+                  className="flex items-center px-10 text-sm font-bold uppercase tracking-[4px] text-red-600 md:text-base"
+                >
+                  <span className="drop-shadow-sm">PRASAD SPICES </span>
+
+                  <span className="ml-10 text-green-600/80">✦</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Optional subtle highlight */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/70" />
+      </div>
       {/* Background Blur / Glows */}
       <div className="pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-yellow-200/50 blur-3xl sm:-left-20 sm:h-64 sm:w-64 lg:-left-28 lg:top-10 lg:h-80 lg:w-80" />
       <div className="pointer-events-none absolute -right-16 top-1/3 h-56 w-56 rounded-full bg-green-200/50 blur-3xl sm:-right-20 sm:h-64 sm:w-64 lg:-right-28 lg:h-80 lg:w-80" />
