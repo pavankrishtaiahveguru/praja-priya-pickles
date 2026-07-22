@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Playfair_Display, Dancing_Script } from "next/font/google";
+import {
+  Playfair_Display,
+  Dancing_Script,
+  Cormorant_Garamond,
+} from "next/font/google";
 import { ShoppingBag, Leaf, CookingPot, Package2 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 
@@ -18,11 +22,17 @@ const script = Dancing_Script({
   variable: "--font-script",
 });
 
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-cormorant",
+});
+
 export default function Hero() {
   return (
     <section
       id="home"
-      className={`${playfair.variable} ${script.variable} relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-[#FFFDF6] via-[#FBF3D9] to-[#EFF6DC]`}
+      className={`${playfair.variable} ${script.variable} ${cormorant.variable} relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-[#FFFDF6] via-[#FBF3D9] to-[#EFF6DC]`}
     >
       {/* Glass Marquee */}
       <div className="absolute top-0 left-0 z-30 w-full overflow-hidden border-b border-white/20 bg-white/15 backdrop-blur-2xl shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
@@ -34,7 +44,9 @@ export default function Hero() {
                   key={index}
                   className="flex items-center px-10 text-sm font-bold uppercase tracking-[4px] text-red-600 md:text-base"
                 >
-                  <span className="drop-shadow-sm">PRASAD SPICES </span>
+                  <span className="font-[family-name:var(--font-cormorant)] text-base font-bold tracking-[5px] drop-shadow-sm md:text-lg">
+                    PRASAD SPICES
+                  </span>
 
                   <span className="ml-10 text-green-600/80">✦</span>
                 </span>
