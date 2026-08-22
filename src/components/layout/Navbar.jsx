@@ -53,26 +53,53 @@ export default function Navbar() {
 
     if (!sections.length) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntry = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    // Navbar is 80px (h-20) + 20px offset for stable detection
+    const ACTIVATION_OFFSET = 80 + 20;
 
-        if (visibleEntry) {
-          setActiveSection(visibleEntry.target.id);
+    let animationFrameId;
+
+    const updateActiveSection = () => {
+      const scrollTop = window.scrollY;
+      const activationPoint = scrollTop + ACTIVATION_OFFSET;
+
+      let activeId = "home"; // Default to home
+      let closestDistance = Infinity;
+
+      // Find the section whose top is closest to (but not below) the activation point
+      sections.forEach((section) => {
+        const sectionTop = section.getBoundingClientRect().top + scrollTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+
+        // Section is active if activation point is within its bounds
+        if (activationPoint >= sectionTop && activationPoint < sectionBottom) {
+          activeId = section.id;
+          closestDistance = 0;
         }
-      },
-      {
-        root: null,
-        threshold: [0.1, 0.2, 0.3],
-        rootMargin: "-10% 0px -40% 0px",
-      },
-    );
+        // Otherwise, prefer the section whose top is closest above the activation point
+        else if (sectionTop <= activationPoint) {
+          const distance = activationPoint - sectionTop;
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            activeId = section.id;
+          }
+        }
+      });
 
-    sections.forEach((section) => observer.observe(section));
+      setActiveSection(activeId);
+    };
 
-    return () => observer.disconnect();
+    const handleScroll = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(updateActiveSection);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    updateActiveSection(); // Set initial active section
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
   const handleNavClick = (event, href) => {
