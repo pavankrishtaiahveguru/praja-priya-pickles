@@ -1,6 +1,7 @@
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import FloatingWhatsApp from "@/components/common/FloatingWhatsApp";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -87,7 +88,10 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          {children}
+          <FloatingWhatsApp />
+        </CartProvider>
       </body>
     </html>
   );

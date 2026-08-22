@@ -116,15 +116,29 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row lg:justify-start">
-            <button className="group flex h-[60px] min-w-[230px] items-center justify-center gap-3 rounded-full bg-[#2F7A1F] px-10 text-[20px] font-semibold text-white shadow-[0_10px_25px_rgba(47,122,31,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(47,122,31,0.35)]">
+            <button
+              onClick={() => {
+                document.getElementById("products")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }}
+              className="group flex h-[60px] min-w-[230px] items-center justify-center gap-3 rounded-full bg-[#2F7A1F] px-10 text-[20px] font-semibold text-white shadow-[0_10px_25px_rgba(47,122,31,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(47,122,31,0.35)]"
+            >
               <ShoppingBag size={22} />
               Shop Now
             </button>
 
-            <button className="group flex h-[60px] min-w-[300px] items-center justify-center gap-3 rounded-full border-2 border-[#2F7A1F] bg-white px-10 text-[20px] font-semibold text-[#2F7A1F] shadow-[0_8px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:bg-[#2F7A1F] hover:text-white">
+            <a
+              href="https://wa.me/919853866999"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Order on WhatsApp"
+              className="group flex h-[60px] min-w-[300px] items-center justify-center gap-3 rounded-full border-2 border-[#2F7A1F] bg-white px-10 text-[20px] font-semibold text-[#2F7A1F] shadow-[0_8px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:bg-[#2F7A1F] hover:text-white"
+            >
               <FaWhatsapp size={22} />
               WhatsApp Order
-            </button>
+            </a>
           </div>
 
           {/* Stats Card */}
