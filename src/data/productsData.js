@@ -164,6 +164,16 @@ export const productCategories = [
       },
       {
         id: 16,
+        name: "Natukodi Chicken Pickle",
+        image: "/products/non-veg/natukodi-chicken.jpeg",
+        price: {
+          halfKg: 750,
+          oneKg: 1500,
+        },
+        category: "Non-Veg Pickles",
+      },
+      {
+        id: 17,
         name: "Mutton Pickle",
         image: "/products/non-veg/mutton-pickle.jpeg",
         price: {
@@ -173,7 +183,7 @@ export const productCategories = [
         category: "Non-Veg Pickles",
       },
       {
-        id: 17,
+        id: 18,
         name: "Gongura Mutton Pickle",
         image: "/products/non-veg/gongura-mutton.jpeg",
         price: {
@@ -183,7 +193,7 @@ export const productCategories = [
         category: "Non-Veg Pickles",
       },
       {
-        id: 18,
+        id: 19,
         name: "Boneless Mutton Pickle",
         image: "/products/non-veg/boneless-mutton.jpeg",
         price: {
@@ -193,7 +203,7 @@ export const productCategories = [
         category: "Non-Veg Pickles",
       },
       {
-        id: 19,
+        id: 20,
         name: "Prawns Pickle",
         image: "/products/non-veg/prawns-pickle.jpeg",
         price: {
@@ -203,7 +213,7 @@ export const productCategories = [
         category: "Non-Veg Pickles",
       },
       {
-        id: 20,
+        id: 21,
         name: "Fish Pickle",
         image: "/products/non-veg/fish-pickle.jpeg",
         price: {

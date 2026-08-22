@@ -202,10 +202,11 @@ export default function Hero() {
                 src="/images/leafs.png"
                 alt=""
                 fill
+                loading="eager"
                 sizes="(max-width:640px) 120px,
-                  (max-width:768px) 160px,
-                  (max-width:1024px) 200px,
-                  288px"
+                (max-width:768px) 160px,
+                (max-width:1024px) 200px,
+                288px"
                 aria-hidden="true"
                 className="object-contain"
               />
