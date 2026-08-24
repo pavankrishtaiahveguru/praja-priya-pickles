@@ -17,7 +17,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://prajapriyapickles.com"),
+  metadataBase: new URL("https://prajapriyapickles.in"),
 
   title: {
     default: "Praja Priya Pickles | Authentic Homemade Andhra Pickles",
